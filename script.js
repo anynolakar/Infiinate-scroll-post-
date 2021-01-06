@@ -2,7 +2,7 @@ const postContainer = document.getElementById("posts-container");
 const loading = document.querySelector(".loader");
 const filter = document.getElementById("filter");
 
-let limit = 3;
+let limit = 5;
 let page = 1;
 
 //Fetch posts from API
@@ -35,17 +35,48 @@ async function showPosts() {
     postContainer.appendChild(postEl);
   });
 }
+// Show loader & fetch more posts
+function showLoading() {
+  loading.classList.add("show");
 
+  setTimeout(() => {
+    loading.classList.remove(`show`);
+  }, 1000);
+
+  setTimeout(() => {
+    page++;
+    showPosts();
+  }, 500);
+}
+
+//filter post by input
+function filterPost(e) {
+  const term = e.target.value.toUpperCase();
+  const posts = document.querySelectorAll(`.post`);
+
+  posts.forEach((post) => {
+    const title = post.querySelector(`.post-title`).innerText.toUpperCase();
+    const body = post.querySelector(`.post-body`).innerText.toUpperCase();
+
+    if (title.indexOf(term) > -1 || body.indexOf(term) > -1) {
+      post.style.display = `flex`;
+    } else {
+      post.style.display = "none";
+    }
+  });
+}
 //show initial posts
 showPosts();
 
 window.addEventListener("scroll", () => {
-  const { scollTop, scrollHeight, clientHeight } = document.documentElement;
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 
-  if (scollTop + clientHeight >= scrollHeight - 5) {
-    console.log(123);
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    showLoading();
   }
 });
+
+filter.addEventListener("input", filterPost);
 
 /* <div class="post">
 <div class="number">1</div>
